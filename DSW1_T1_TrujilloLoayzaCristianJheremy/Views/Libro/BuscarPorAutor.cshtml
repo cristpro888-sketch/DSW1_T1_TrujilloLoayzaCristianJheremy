@@ -1,0 +1,93 @@
+@model IEnumerable<Libro>
+
+@{
+    ViewData["Title"] = "Consulta de Libros por Autor";
+    string autorBuscado = ViewBag.AutorBuscado ?? string.Empty;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="fw-bold text-dark mb-0">Consulta de Libros por Autor</h2>
+        <p class="text-muted small mb-0">Búsqueda con coincidencia parcial (<code>usp_ListarLibrosPorAutor</code>)</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Volver al Listado General
+    </a>
+</div>
+
+@if (ViewBag.Mensaje != null)
+{
+    var tipo = ViewBag.TipoMensaje ?? "danger";
+    <div class="alert alert-@tipo alert-dismissible fade show" role="alert">
+        @ViewBag.Mensaje
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form asp-action="BuscarPorAutor" method="get" class="row g-3 align-items-end">
+            <div class="col-md-8 col-lg-6">
+                <label for="autor" class="form-label fw-semibold">Nombre o fragmento del Autor</label>
+                <input type="text" id="autor" name="autor" value="@autorBuscado" class="form-control"
+                       placeholder="Ej. Vargas, García, Ribeyro..." maxlength="100" />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i>Consultar
+                </button>
+                <a asp-action="BuscarPorAutor" class="btn btn-outline-secondary ms-1">
+                    <i class="bi bi-eraser me-1"></i>Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+        <span class="fw-semibold text-secondary">Resultados encontrados: <span class="badge bg-primary">@(Model?.Count() ?? 0)</span></span>
+        @if (!string.IsNullOrWhiteSpace(autorBuscado))
+        {
+            <span class="small text-muted">Filtro aplicado: <strong>"@autorBuscado"</strong></span>
+        }
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="ps-3">Id</th>
+                        <th>NombreLibro</th>
+                        <th>Autor</th>
+                        <th>NombreEditorial</th>
+                        <th class="pe-3">ISDN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-3 fw-semibold">@item.Id</td>
+                                <td>@item.NombreLibro</td>
+                                <td>@item.Autor</td>
+                                <td>@item.NombreEditorial</td>
+                                <td class="pe-3"><span class="badge bg-secondary">@item.ISDN</span></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                No se encontraron libros que coincidan con el autor ingresado.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
